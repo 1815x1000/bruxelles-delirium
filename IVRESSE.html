@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>ivresse</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Times New Roman', Times, serif;
+      color: white;
+      background: black;
+    }
+    #background-video {
+       position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: auto;
+  height: 90%;
+  z-index: -1;
+  object-fit: cover;
+  opacity: 0.5;
+    }
+    .logo-container {
+      position: absolute;
+      top: 20px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      z-index: 1;
+    }
+    .logo-container img {
+      max-height: 60px;
+      cursor: pointer;
+      transition: filter 0.2s ease; /* Transition douce */
+    }
+    .logo-container img:hover {
+      filter: invert(100%); /* Effet négatif au survol */
+    }
+    .text-container {
+      max-width: 700px;
+      padding: 2rem;
+      font-weight: bold;
+      text-align: left;
+      background: rgba(0, 0, 0, 0);
+      border-radius: 10px;
+    }
+    .play-button-container {
+  position: fixed;
+  left: 180px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  cursor: pointer;
+}
+
+#play-button {
+  height: 60px;
+  width: auto;
+  transition: transform 0.2s ease;
+}
+
+#play-button:hover {
+  transform: scale(1.1);
+}
+  </style>
+</head>
+<body>
+    <audio id="background-music" loop>
+  <source src="images/gurdjieff-dance.mp3" type="audio/mp3">
+</audio>
+<div class="play-button-container">
+  <img src="images/cercle blanc.png" alt="Play Music" id="play-button" />
+</div>
+   <video id="background-video" autoplay loop muted>
+  <source src="images/Lorenz Attractor Spreading Into Chaos720p.mp4" type="video/mp4">
+</video>
+  <div class="logo-container">
+    <a href="epicureus.html"><img src="images/grapes2.png" alt="Logo" /></a>
+  </div>
+  <div class="text-container">
+    ENIVREZ-VOUS <br><br>Il faut être toujours ivre. Tout est là : c'est l'unique question. Pour ne pas sentir l'horrible fardeau du Temps qui brise vos épaules et vous penche vers la terre, il faut vous enivrer sans trêve.<br><br>
+    Mais de quoi ? De vin, de poésie, de vertu, à votre guise. Mais enivrez-vous.<br><br>
+    Et si quelquefois, sur les marches d'un palais, sur l'herbe verte d'un fossé, dans la solitude morne de votre chambre, vous vous réveillez, l'ivresse déjà diminuée ou disparue, demandez au vent, à la vague, à l'étoile, à l'oiseau, à l'horloge, à tout ce qui fuit, à tout ce qui gémit, à tout ce qui roule, à tout ce qui chante, à tout ce qui parle, demandez quelle heure il est ; et le vent, la vague, l'étoile, l'oiseau, l'horloge, vous répondront : "Il est l'heure de s'enivrer ! Pour n'être pas les esclaves martyrisés du Temps, enivrez-vous ; enivrez-vous sans cesse ! De vin, de poésie ou de vertu, à votre guise.<br><br><br>
+    Baudelaire : Petits poèmes en prose, XXXIII (1869)
+  </div>
+</body>
+<script>
+  const video = document.getElementById("background-video");
+  video.playbackRate = 2; // plus lent (1 = normal)
+
+   const playButton = document.getElementById('play-button');
+  const music = document.getElementById('background-music');
+
+  let isPlaying = false;
+
+  playButton.addEventListener('click', () => {
+    if (!isPlaying) {
+      music.play();
+      isPlaying = true;
+      playButton.src = 'images/cercle bleu.png'; // si tu veux changer l’icône après clic
+    } else {
+      music.pause();
+      isPlaying = false;
+      playButton.src = 'images/cercle blanc.png';
+    }
+  });
+</script>
+</html>
