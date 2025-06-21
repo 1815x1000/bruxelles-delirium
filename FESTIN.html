@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>festin</title>
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+      background-color: #ffffff00;
+      color: black;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      transition: filter 0.3s ease;
+    }
+
+    body.invert {
+      filter: invert(1) hue-rotate(180deg);
+    }
+
+    #pageTitle {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      background: rgba(255, 255, 255, 0);
+      padding: 10px 20px;
+      border-radius: 8px;
+      max-width: 90vw;
+      font-size: 24px;
+      font-weight: bold;
+      font-family: 'Times New Roman', Times, serif;
+      color: #000000;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    #pageTitle span {
+      font-size: 16px;
+      font-weight: bold;
+      font-style: normal;
+      font-family: 'Times New Roman', Times, serif;
+      color: #000000;
+    }
+
+    #backButton {
+      position: fixed;
+      top: 5px;
+      left: 20px;
+      z-index: 60;
+      width: 120px;
+      height: 120px;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0);
+      border-radius: 8px;
+      padding: 5px;
+    }
+
+    #backButton img {
+      width: 160px;
+      height: 160px;
+      object-fit: contain;
+      display: block;
+    }
+
+    #toggleMode {
+      position: fixed;
+      top: 5px;
+      right: 20px;
+      z-index: 60;
+      width: 140px;
+      cursor: pointer;
+      border-radius: 5px;
+      background-color: rgba(255, 255, 255, 0);
+      padding: 10px 20px;
+      color: black;
+      font-size: 16px;
+      border: none;
+    }
+
+    #contentContainer {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90vw;
+      height: calc(100% - 100px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #mode1 {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #mode1 img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      cursor: pointer;
+    }
+
+    #mode2 {
+      width: 100%;
+      height: 100%;
+      display: none;
+      gap: 10px;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      display: grid;
+      overflow: auto;
+    }
+
+    .grid-item {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      border-radius: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: transparent !important;
+    }
+
+    .grid-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      user-select: none;
+      pointer-events: none;
+      background-color: transparent !important;
+    }
+
+    #descriptionBox {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0);
+      padding: 15px 25px;
+      border-radius: 8px;
+      max-width: 80vw;
+      font-size: 18px;
+      display: none;
+      color: #fff;
+      z-index: 10;
+      pointer-events: auto;
+    }
+
+    #descriptionBox button {
+      margin-left: 20px;
+      background: #555;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    /* Bouton inversion via image cliquable */
+    #invertHoverLink {
+      position: fixed;
+      bottom: 40px;
+      left: 40px;
+      z-index: 70;
+      cursor: pointer;
+    }
+
+    #invertHoverImage {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      pointer-events: auto;
+    }
+
+    /* Bouton audio (bas droite) */
+    #audioToggleBtn {
+      position: fixed;
+      bottom: 20px;
+      right: 10px;
+      z-index: 70;
+      padding: 10px 20px;
+      background-color: rgba(255, 255, 255, 0);
+      color: rgba(0, 0, 0, 0);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0);
+      user-select: none;
+    }
+
+    #audioToggleBtn img,
+    #invertHoverImage {
+      width: 160px;
+      height: 160px;
+      object-fit: contain;
+    }
+    #imageOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  z-index: 100;
+}
+
+#overlayBackground {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(12px);
+  background-color: rgba(255, 255, 255, 0.65); /* Plus sombre */
+  
+}
+#overlayContent {
+  position: relative;
+  z-index: 101;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+#overlayImage {
+  max-width: 800px;
+  max-height: 50vh;
+  object-fit: contain;
+  border-radius: 10px;
+  top: 10px
+}
+
+#overlayDescription {
+  color: rgb(0, 0, 0);
+  font-size: 40px;
+  margin-top: 20px;
+  font-family: 'Times New Roman', Times, serif;
+  font-weight: bold;
+}
+
+  </style>
+</head>
+<body>
+
+  <div id="imageOverlay">
+  <div id="overlayBackground"></div>
+  <div id="overlayContent">
+    <img id="overlayImage" src="" alt="Image en grand" />
+    <div id="overlayDescription">Texte de description</div>
+  </div>
+</div>
+
+  <h1 id="pageTitle">
+    « On gogaillait, on ripaillait, on bombançait, on ribotait jusqu’à plus soif !»<br />
+    <span>- Georges Perec, La Disparition, 1969</span>
+  </h1>
+
+  <a href="EPICUREUS.html" id="backButton" title="Retour à EPICUREUS">
+    <img src="images/vin1.png" alt="Retour" />
+  </a>
+
+  <img id="toggleMode" src="images/Nakiri.jpg" alt="Changer de mode" />
+
+  <div id="contentContainer">
+    <div id="mode1">
+      <img src="images/rice-roll.png" alt="Diaporama" />
+    </div>
+
+    <div id="mode2">
+      <div class="grid-item"><img src="images/rice-roll.png" alt="Image 1" data-desc="RICE ROLLS QUI BUTE SA MERE" /></div>
+      <div class="grid-item"><img src="images/croquettes-noordzee.png" alt="Image 2" data-desc="GIIIILLLLEEESSSS" /></div>
+      <div class="grid-item"><img src="images/smash.png" alt="Image 3" data-desc="SUINTANT DE GRAISSE DE BOEUF" /></div>
+      <div class="grid-item"><img src="images/horloge.png" alt="Image 4" data-desc="AH VRAIMENTTTT LA" /></div>
+      <div class="grid-item"><img src="images/frites.png" alt="Image 5" data-desc="SUINTANTES DE GRAISSE DE TRUIE" /></div>
+      <div class="grid-item"><img src="images/tokidoki.png" alt="Image 6" data-desc="CHING CHANG CHONG" /></div>
+      <div class="grid-item"><img src="images/plantain.png" alt="Image 7" data-desc="UN BON FOUTOU PLANTAIN MEUH OUI VREUUUUMENT" /></div>
+      <div class="grid-item"><img src="images/pain-choc.png" alt="Image 8" data-desc="PAIN ET BIERE QU ILS S APPELLENT" /></div>
+      <div class="grid-item"><img src="images/tajine.png" alt="Image 9" data-desc="TAJINE ET COUSCOUS COMME AU MAROC ORIGINAL 100% PAS FAKE" /></div>
+      <div class="grid-item"><img src="images/carbonnade.png" alt="Image 10" data-desc="UNE BELLE CARBONNADE FLAMANDE UNE FOIS FIEU" /></div>
+      <div class="grid-item"><img src="images/ballekes.png" alt="Image 11" data-desc="LES BONNES BALLEKES FLAMANDES DEUX FOIS FIEUUU" /></div>
+      <div class="grid-item"><img src="images/old-boy.png" alt="Image 12" data-desc="CHING CHANG CHONG 2" /></div>
+      <div class="grid-item"><img src="images/moules frites.png" alt="Image 13" data-desc="MOULES A BOUFFER" /></div>
+      <div class="grid-item"><img src="images/américain.png" alt="Image 14" data-desc="TARTARE EN MOINS BON MAIS BON C EST BELGE FAUT RESPECTER" /></div>
+      <div class="grid-item"><img src="images/fricadelle speciale.png" alt="Image 15" data-desc="DELIKATESSE" /></div>
+      <div class="grid-item"><img src="images/ricard.png" alt="Image 16" data-desc="MOURONS NOYE DANS DU RICARD" /></div>
+      <div class="grid-item"><img src="images/ZHAO.png" alt="Image 17" data-desc="PATE" /></div>
+      <div class="grid-item"><img src="images/itaewon.png" alt="Image 18" data-desc="BARBE AU CUL" /></div>
+    </div>
+  </div>
+
+  <!-- Bouton inversion par hover vers houblon.html -->
+  <a id="invertHoverLink" href="houblon.html" title="Vers Houblon">
+    <img src="images/JUPILER.png" alt="Inverser" id="invertHoverImage" />
+  </a>
+
+  <button id="audioToggleBtn" title="Lancer / arrêter audio">
+    <img src="images/fourchette.png" alt="Play Audio" />
+  </button>
+
+  <audio id="backgroundAudio" loop>
+    <source src="images/Serge Gainsbourg - Eau & Gaz A Tous Les Etages - RastaChaka.mp3" type="audio/mpeg" />
+    Ton navigateur ne supporte pas l'élément audio.
+  </audio>
+
+  <script>
+    const images = [
+      'images/rice-roll.png',
+      'images/croquettes-noordzee.png',
+      'images/smash.png',
+      'images/horloge.png',
+      'images/frites.png',
+      'images/tokidoki.png',
+      'images/plantain.png',
+      'images/pain-choc.png',
+      'images/tajine.png',
+      'images/carbonnade.png',
+      'images/ballekes.png',
+      'images/old-boy.png',
+      'images/moules frites.png',
+      'images/américain.png',
+      'images/fricadelle speciale.png',
+      'images/ricard.png',
+      'images/zhao.png',
+      'images/itaewon.png',
+
+
+    ];
+
+    const imageDescriptions = [
+      "RICE ROLLS QUI BUTE SA MERE",
+      "MAAAAXXIIIIIMMEEEEEE",
+      "SUINTANT DE GRAISSE DE BOEUF",
+      "AH VRAIMENTTTT LA",
+      "SUINTANTES DE GRAISSE DE TRUIE",
+      "CHING CHANG CHONG",
+      "UN BON FOUTOU PLANTAIN MEUH OUI VREUUUUMENT",
+      "PAIN ET BIERE QU ILS S APPELLENT",
+      "TAJINE ET COUSCOUS COMME AU MAROC ORIGINAL 100% PAS FAKE",
+      "UNE BELLE CARBONNADE FLAMANDE UNE FOIS FIEU",
+      "LES BONNES BALLEKES FLAMANDES DEUX FOIS FIEUUU",
+      "CHING CHANG CHONG 2",
+      "MOULES A BOUFFER",
+      "TARTARE EN MOINS BON MAIS BON C EST BELGE FAUT RESPECTER",
+      "DELIKATESSE",
+      "MOURONS NOYE DANS DU RICARD",
+      "PATE",
+      "BARBE AU CUL",
+    ];
+
+    const mode1 = document.getElementById('mode1');
+    const mode1Img = mode1.querySelector('img');
+    let indexMode1 = 0;
+    let intervalMode1;
+
+    function startMode1() {
+      intervalMode1 = setInterval(() => {
+        indexMode1 = (indexMode1 + 1) % images.length;
+        mode1Img.src = images[indexMode1];
+      }, 2000);
+    }
+
+    function stopMode1() {
+      clearInterval(intervalMode1);
+    }
+
+    const mode2 = document.getElementById('mode2');
+    const gridItems = mode2.querySelectorAll('.grid-item img');
+
+    function startMode2() {}
+    function stopMode2() {}
+
+    mode1.style.display = 'flex';
+    mode2.style.display = 'none';
+    startMode1();
+
+    const toggleBtn = document.getElementById('toggleMode');
+    toggleBtn.addEventListener('click', () => {
+      if (mode1.style.display !== 'none') {
+        stopMode1();
+        mode1.style.display = 'none';
+        mode2.style.display = 'grid';
+        toggleBtn.textContent = 'Passer au mode diaporama';
+        startMode2();
+      } else {
+        stopMode2();
+        mode2.style.display = 'none';
+        mode1.style.display = 'flex';
+        toggleBtn.textContent = 'Passer au mode grille';
+        startMode1();
+        hideDescription();
+      }
+    }); 
+
+    gridItems.forEach(img => {
+      img.parentElement.addEventListener('click', () => {
+        stopMode2();
+        descText.textContent = img.dataset.desc || "Pas de description disponible.";
+        descriptionBox.style.display = 'block';
+      });
+    });
+
+    mode1Img.addEventListener('click', () => {
+      stopMode1();
+      const desc = imageDescriptions[indexMode1] || "Pas de description disponible.";
+      descText.textContent = desc;
+      descriptionBox.style.display = 'block';
+    });
+
+    // Effet hover pour inversion
+    const invertHoverLink = document.getElementById('invertHoverLink');
+    invertHoverLink.addEventListener('mouseenter', () => {
+      document.body.classList.add('invert');
+    });
+    invertHoverLink.addEventListener('mouseleave', () => {
+      document.body.classList.remove('invert');
+    });
+
+    // Audio toggle
+    const audioBtn = document.getElementById('audioToggleBtn');
+    const audioBtnImg = audioBtn.querySelector('img');
+    const audio = document.getElementById('backgroundAudio');
+    let isPlaying = false;
+
+    audioBtn.addEventListener('click', () => {
+      if (isPlaying) {
+        audio.pause();
+        audioBtnImg.src = 'images/fourchette.png';
+        audioBtnImg.alt = 'Play Audio';
+      } else {
+        audio.play();
+        audioBtnImg.src = 'images/fourchette.png';
+        audioBtnImg.alt = 'Pause Audio';
+      }
+      isPlaying = !isPlaying;
+    });
+    const imageOverlay = document.getElementById('imageOverlay');
+const overlayImage = document.getElementById('overlayImage');
+const overlayDescription = document.getElementById('overlayDescription');
+const overlayClose = document.getElementById('overlayClose');
+
+function showImageOverlay(src, desc) {
+  overlayImage.src = src;
+  overlayDescription.textContent = desc;
+  imageOverlay.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeOverlay() {
+  imageOverlay.style.display = 'none';
+  document.body.style.overflow = 'auto';
+}
+
+// clic sur image de diaporama
+mode1Img.addEventListener('click', () => {
+  stopMode1();
+  const src = mode1Img.src;
+  const desc = imageDescriptions[indexMode1] || "Pas de description disponible.";
+  showImageOverlay(src, desc);
+});
+
+// clic sur image de la grille
+gridItems.forEach(img => {
+  img.parentElement.addEventListener('click', () => {
+    stopMode2();
+    const src = img.src;
+    const desc = img.dataset.desc || "Pas de description disponible.";
+    showImageOverlay(src, desc);
+  });
+});
+
+// Fermer avec la touche Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && imageOverlay.style.display === 'block') {
+    closeOverlay();
+    if (mode1.style.display !== 'none') startMode1();
+    else startMode2();
+  }
+});
+  </script>
+</body>
+</html>

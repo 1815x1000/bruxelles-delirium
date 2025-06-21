@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>nox</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      min-width: 50px;
+      min-height: 50px;
+      width: 50px;
+      height: auto;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: black;
+    }
+
+    #background-video {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
+      width: 100px;
+      height: auto;
+      z-index: 0;
+      background-size: cover;
+    }
+
+    #play-button {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 245px;
+      height: 155px;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    #play-button:hover {
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      color: white;
+      font-family: serif;
+      text-align: center;
+      padding: 60px 20px;
+      pointer-events: none;
+    }
+
+    .control-button {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      z-index: 3;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-left: 10px;
+    }
+
+    .control-button img {
+      width: 100%;
+      height: auto;
+    }
+
+    .image-gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin: 40px;
+    }
+
+    .image-item {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .image-item img {
+      width: 200px;
+      height: auto;
+      filter: grayscale(80%) opacity(0.6);
+      transition: filter 0.3s;
+    }
+
+    .image-item:hover img {
+      filter: grayscale(0%) opacity(1);
+    }
+
+    .info-text {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    .image-item.active .info-text {
+      display: block;
+    }
+
+    #nox-title {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 700px;
+      font-weight: bold;
+      color: rgba(255, 255, 255, 0);
+      text-align: center;
+      width: 100%;
+      pointer-events: none;
+      z-index: 2;
+      font-family: 'Times New Roman', Times, serif;
+      display: flex;
+      justify-content: center;
+      gap: 1vw;
+    }
+
+    .letter {
+      display: inline-block;
+      animation: shine 3s infinite alternate;
+    }
+
+    .letter:nth-child(1) { animation-delay: 3.2s; }
+    .letter:nth-child(2) { animation-delay: 2.3s; }
+    .letter:nth-child(3) { animation-delay: 1.1s; }
+
+    @keyframes shine {
+      0% {
+        color: rgba(255, 255, 255, 0);
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0);
+      }
+      100% {
+        color: rgba(255, 255, 255, 0.4);
+        text-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+      }
+    }
+    #home-button img {
+  width: 100%;
+  height: auto;
+  transition: opacity 0s ease;
+}
+
+#home-button:hover img {
+  content: url('images/cuphead dab inverted.png');
+}
+
+body {
+  margin: 0;
+  background: black;
+  overflow: hidden;
+}
+
+.floating-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.floating-img {
+  position: absolute;
+  width: 400px;
+  opacity: 0.5;
+  transition: opacity 0.3s;
+  pointer-events: auto;
+}
+
+.floating-img:hover {
+  opacity: 1;
+  cursor: pointer;
+}
+
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(4px);
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  flex-direction: column;
+  transition: opacity 0.5s ease;
+}
+
+#overlay.hidden {
+  display: none;
+}
+
+.overlay-text {
+  font-size: 24px;
+  margin-bottom: 20px;
+  max-width: 60%;
+  text-align: center;
+  
+}
+
+.floating-img.inverted {
+  filter: invert(100%);
+}
+
+#close-button:hover {
+  filter: brightness(1.5);
+  transform: scale(1.1);
+  transition: filter 0.2s, transform 0.2s;
+}
+  </style>
+</head>
+<body>
+
+  <body>
+  <div class="floating-container">
+    <img src="images/c12 nite affiche.png" class="floating-img" data-text="SEPULCRAL" data-link="https://fr.ra.co/events/2170924"/>
+    <img src="images/hyperdrive affiche.png" class="floating-img" data-text="ULTRADRIVE" data-link="https://fr.ra.co/events/2175717" />
+    <img src="images/kompressor affiche.png" class="floating-img" data-text="PARASITIC"
+    data-link="https://fr.ra.co/events/2187909" />
+    <img src="images/modulair affiche.png" class="floating-img" data-text="DESTRUCTIVE" data-link="https://www.modul-air.com/" />
+    <img src="images/movement 01.png" class="floating-img" data-text="TRANSCENDENTAL" data-link="https://fr.ra.co/events/2120309" />
+    <img src="images/brasserie-senne.png" class="floating-img" data-text="SOLAR" data-link="https://fr.ra.co/events/2197335" />
+    
+
+  </div>
+
+  <!-- Overlay texte -->
+  <div id="overlay" class="hidden">
+    <div class="overlay-text" id="overlay-text"></div>
+    <img src="images/Enneagram_-_2.png" alt="Fermer" id="close-button" onclick="closeOverlay()" style="width:48px; height:48px; cursor:pointer; margin-top:20px;">
+  </div>
+</body> 
+
+  <div id="nox-title" class="shining-title">
+    <span class="letter">N</span>
+    <span class="letter">O</span>
+    <span class="letter">X</span>
+  </div>
+
+  <a href="index.html" id="home-button" class="control-button">
+  <img src="images/cuphead dab.png" alt="Home">
+</a>
+
+  <video id="background-video">
+    <source src="images/cuphead_compressed480p.mp4" type="video/mp4">
+  </video>
+
+  <button id="play-button">
+    <img src="images/cuphead_play.png" alt="Play">
+  </button>
+
+  <script>
+    const playButton = document.getElementById('play-button');
+    const video = document.getElementById('background-video');
+    const muteButton = document.getElementById('mute-button');
+
+    playButton.addEventListener('click', () => {
+      playButton.style.display = 'none';
+      video.style.display = 'block';
+      video.style.position = 'fixed';
+      video.style.top = '0';
+      video.style.left = '0';
+      video.style.minWidth = '100%';
+      video.style.minHeight = '100%';
+      video.style.width = 'auto';
+      video.style.height = 'auto';
+      video.style.objectFit = 'cover';
+      video.style.zIndex = '-1';
+
+      video.volume = 0; // Start volume at 0
+      video.muted = false;
+      video.play();
+
+      // Fade in audio
+      let volume = 0;
+      const fadeIn = setInterval(() => {
+        if (volume < 1) {
+          volume += 0.05;
+          video.volume = Math.min(volume, 1);
+        } else {
+          clearInterval(fadeIn);
+        }
+      }, 500); // Every 200ms: fade over ~4s
+
+      muteButton.style.display = 'flex';
+    });
+const images = document.querySelectorAll('.floating-img');
+const velocities = [];
+
+// Initialisation des positions et vitesses
+images.forEach(img => {
+  img.style.left = Math.random() * (window.innerWidth - 150) + 'px';
+  img.style.top = Math.random() * (window.innerHeight - 150) + 'px';
+
+  velocities.push({
+    dx: (Math.random() - 0.5) * 10,
+    dy: (Math.random() - 0.5) * 10
+  });
+
+  img.addEventListener('click', () => {
+    document.getElementById('overlay-text').innerText = img.dataset.text;
+    document.getElementById('overlay').classList.remove('hidden');
+  });
+});
+
+function closeOverlay() {
+  document.getElementById('overlay').classList.add('hidden');
+}
+
+// Animation continue
+function animate() {
+  images.forEach((img, i) => {
+    const rect = img.getBoundingClientRect();
+    const v = velocities[i];
+
+    let x = rect.left + v.dx;
+    let y = rect.top + v.dy;
+
+    // Rebond aux bords
+    if (x <= 0 || x + rect.width >= window.innerWidth) {
+      velocities[i].dx *= -1;
+    }
+    if (y <= 0 || y + rect.height >= window.innerHeight) {
+      velocities[i].dy *= -1;
+    }
+
+    img.style.left = (rect.left + velocities[i].dx) + 'px';
+    img.style.top = (rect.top + velocities[i].dy) + 'px';
+  });
+
+  // Gérer les inversions de couleur en cas de chevauchement
+  const collided = new Set();
+
+  for (let i = 0; i < images.length; i++) {
+    for (let j = i + 1; j < images.length; j++) {
+      const a = images[i];
+      const b = images[j];
+
+      if (checkOverlap(a, b)) {
+        collided.add(a);
+        collided.add(b);
+      }
+    }
+  }
+
+  // Appliquer ou retirer le filtre
+  images.forEach(img => {
+    if (collided.has(img)) {
+      img.classList.add('inverted');
+    } else {
+      img.classList.remove('inverted');
+    }
+  });
+
+  requestAnimationFrame(animate);
+}
+
+// Collision simple
+function checkOverlap(a, b) {
+  const rect1 = a.getBoundingClientRect();
+  const rect2 = b.getBoundingClientRect();
+  return !(
+    rect1.right < rect2.left ||
+    rect1.left > rect2.right ||
+    rect1.bottom < rect2.top ||
+    rect1.top > rect2.bottom
+  );
+}
+images.forEach(img => {
+  img.addEventListener('click', () => {
+    document.getElementById('overlay-text').textContent = img.dataset.text;
+    // Crée ou met à jour le lien dans l’overlay
+    const link = document.getElementById('overlay-link');
+    if (link) {
+      link.href = img.dataset.link;
+      link.textContent = img.dataset.link;
+    } else {
+      // Si le lien n’existe pas encore, tu peux le créer ici
+      const overlayLink = document.createElement('a');
+      overlayLink.id = 'overlay-link';
+      overlayLink.href = img.dataset.link;
+      overlayLink.textContent = img.dataset.link;
+      overlayLink.target = '_blank';
+      // Ajoute le lien dans l’overlay
+      document.getElementById('overlay').appendChild(overlayLink);
+    }
+    document.getElementById('overlay').classList.remove('hidden');
+  });
+});
+
+animate();
+</script>
+
+</body>
+</html>
